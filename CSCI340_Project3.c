@@ -5,7 +5,9 @@
 
 #include <assert.h>
 #include <pthread.h>
+#include <stdio.h>
 #include <stdlib.h>
+
 #include "queue.c"
 
 int main(int argc, char const *argv[]){
@@ -16,6 +18,9 @@ int main(int argc, char const *argv[]){
     }
     int consumerTaskCount = atoi(argv[1]);
 
-    printf("%d\n", consumerTaskCount);
+    // Reading from file passed into stdin.
+    while(!feof(stdin)){
+
+    }
     return 0;
 }
