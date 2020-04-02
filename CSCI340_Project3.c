@@ -29,7 +29,7 @@ int main(int argc, char const *argv[]){
     }
     fclose(fp);
 
-    // Creating multidimenstional array to store lines (while stripping newline characters).
+    // Creating multidimensional array to store lines (while stripping newline characters).
     char lines[lineCount][100];
     // Reading lines from file into 'lines' array.
     int counter = 0;
