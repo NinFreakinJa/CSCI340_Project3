@@ -13,7 +13,7 @@
 
 typedef struct __node_t {
     
-    int               value;
+    char * value;
     struct __node_t * next;
     
 } node_t;
@@ -39,7 +39,7 @@ void Queue_Init(queue_t *q) {
 }
 
 void Queue_Enqueue(queue_t * q,
-                   int       value) {
+                   char*       value) {
     
     node_t *tmp = malloc(sizeof(node_t));
     assert(tmp != NULL);
@@ -54,7 +54,7 @@ void Queue_Enqueue(queue_t * q,
 }
 
 int Queue_Dequeue(queue_t * q,
-                  int *     value) {
+                  char *     value) {
 
     // Failure is always an option
     int rc = -1;
