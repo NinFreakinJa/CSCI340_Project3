@@ -47,9 +47,12 @@ int main(int argc, char const *argv[]){
     fclose(fp);
     remove("./temp.txt");
 
-    // Dequeueing items.
+    // Enqueueing items.
+    //queue_t *q;
+    //Queue_Init(&q);
     for(int i = 0; i < lineCounter; i++){
         printf("%d:\t%s\n", i + 1, lines[i]);
+        //Queue_Enqueue(&q, lines[i]);
     }
     
     return 0;
