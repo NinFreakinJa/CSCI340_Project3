@@ -10,6 +10,7 @@
 #include <assert.h>
 #include <pthread.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 typedef struct __node_t {
     
@@ -36,7 +37,6 @@ void Queue_Init(queue_t *q) {
     
     pthread_mutex_init(&q->head_lock, NULL);
     pthread_mutex_init(&q->tail_lock, NULL);
-    
 }
 
 void Queue_Enqueue(queue_t * q,
@@ -51,7 +51,6 @@ void Queue_Enqueue(queue_t * q,
     q->tail->next = tmp;
     q->tail = tmp;
     pthread_mutex_unlock(&q->tail_lock);
-    
 }
 
 int Queue_Dequeue(queue_t * q,
@@ -72,7 +71,6 @@ int Queue_Dequeue(queue_t * q,
     }
     
     pthread_mutex_unlock(&q->head_lock);
-    
+
     return rc;
-    
 }

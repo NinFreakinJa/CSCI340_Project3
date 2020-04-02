@@ -23,16 +23,16 @@ int main(int argc, char const *argv[]){
     Queue_Init(&lineQueue);
     FILE *fp;
     char buffer[100];
-    int lineCount = 0;
+    int lineCounter = 0;
     fp = fopen("./temp.txt", "w");
     while(fgets(buffer, 100, stdin)){
         fprintf(fp, "%s", buffer);
-        lineCount++;
+        lineCounter++;
     }
     fclose(fp);
 
     // Creating multidimensional array to store lines (while stripping newline characters).
-    char lines[lineCount][100];
+    char lines[lineCounter][100];
     // Reading lines from file into 'lines' array.
     int counter = 0;
     char *pos;
@@ -48,11 +48,14 @@ int main(int argc, char const *argv[]){
     }
     fclose(fp);
     remove("./temp.txt");
-    
-    for(int i = 0; i < lineCount; i++){
-        printf("%d:\t%s\n", i, lines[i]);
+
+    // Enqueueing items.
+    //queue_t *q;
+    //Queue_Init(&q);
+    for(int i = 0; i < lineCounter; i++){
+        printf("%d:\t%s\n", i + 1, lines[i]);
+        //Queue_Enqueue(&q, lines[i]);
     }
     
-
     return 0;
 }
