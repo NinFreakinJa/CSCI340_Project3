@@ -19,8 +19,9 @@ int main(int argc, char const *argv[]){
     int consumerTaskCount = atoi(argv[1]);
 
     // Reading from file passed into stdin.
-    while(!feof(stdin)){
-
+    char buffer[100];
+    while(fgets(buffer, 28, stdin)){
+        printf("%s", buffer);
     }
     return 0;
 }
