@@ -18,10 +18,39 @@ int main(int argc, char const *argv[]){
     }
     int consumerTaskCount = atoi(argv[1]);
 
-    // Reading from file passed into stdin.
+    // Reading from stdin into file for easier handling.
+    FILE *fp;
     char buffer[100];
-    while(fgets(buffer, 28, stdin)){
-        printf("%s", buffer);
+    int lineCount = 0;
+    fp = fopen("./temp.txt", "w");
+    while(fgets(buffer, 100, stdin)){
+        fprintf(fp, "%s", buffer);
+        lineCount++;
     }
+    fclose(fp);
+
+    // Creating array to store lines (while stripping newline characters).
+    char lines[lineCount][100];
+    // Reading lines from file into 'lines' array.
+    int counter = 0;
+    char *pos;
+    fp = fopen("./temp.txt", "r");
+    while(fgets(buffer, 100, fp)){
+        // Stripping newline character.
+        if ((pos = strchr(buffer, '\n')) != NULL){
+            *pos = '\0';
+        }
+        // Writing remaining string to array.
+        strcpy(lines[counter], buffer);
+        counter++;
+    }
+    fclose(fp);
+    remove("./temp.txt");
+    
+    for(int i = 0; i < lineCount; i++){
+        printf("%d:\t%s\n", i, lines[i]);
+    }
+    
+
     return 0;
 }
