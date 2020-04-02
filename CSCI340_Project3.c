@@ -29,7 +29,7 @@ int main(int argc, char const *argv[]){
     }
     fclose(fp);
 
-    // Creating array to store lines (while stripping newline characters).
+    // Creating multidimenstional array to store lines (while stripping newline characters).
     char lines[lineCount][100];
     // Reading lines from file into 'lines' array.
     int counter = 0;
@@ -40,7 +40,7 @@ int main(int argc, char const *argv[]){
         if ((pos = strchr(buffer, '\n')) != NULL){
             *pos = '\0';
         }
-        // Writing remaining string to array.
+        // Copying formatted string to array.
         strcpy(lines[counter], buffer);
         counter++;
     }
