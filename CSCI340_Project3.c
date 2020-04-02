@@ -12,13 +12,15 @@
 
 int main(int argc, char const *argv[]){
     // Checking command-line arguments.
-    if(argc != 2 || atoi(argv[1]) == 0){
+    if(argc != 2 || atoi(argv[1]) <= 0){
         printf("Usage:\t%s <consumer_task_count>\n", argv[0]);
         return 1;
     }
     int consumerTaskCount = atoi(argv[1]);
 
     // Reading from stdin into file for easier handling.
+    queue_t lineQueue;
+    Queue_Init(&lineQueue);
     FILE *fp;
     char buffer[100];
     int lineCount = 0;

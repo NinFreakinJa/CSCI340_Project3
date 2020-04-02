@@ -15,6 +15,7 @@ typedef struct __node_t {
     
     char * value;
     struct __node_t * next;
+    int size;
     
 } node_t;
 
