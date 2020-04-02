@@ -1,7 +1,7 @@
 PGMS=CSCI340_Project3 queue
 
 CC=gcc
-CFLAGS=-Wall -pthread
+CFLAGS=-Wall -g -o -pthread
 
 all: $(PGMS)
 

@@ -7,8 +7,11 @@
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "queue.c"
+
+
 
 int main(int argc, char const *argv[]){
     // Checking command-line arguments.
@@ -21,18 +24,25 @@ int main(int argc, char const *argv[]){
     // Reading from stdin into file for easier handling.
     queue_t lineQueue;
     Queue_Init(&lineQueue);
-    FILE *fp;
-    char buffer[100];
+    //FILE *fp;
+    char *line=NULL;
+    size_t len=0;
+    ssize_t read;
+    //char buffer[100];
     int lineCounter = 0;
-    fp = fopen("./temp.txt", "w");
-    while(fgets(buffer, 100, stdin)){
-        fprintf(fp, "%s", buffer);
+    //fp = fopen("./temp.txt", "w");
+    //while(fgets(buffer, 100, stdin)){
+    while((read=getline(&line,&len,stdin))!=-1){
+        //fprintf(fp, "%s", buffer);
+        char* curr=malloc(sizeof(char)*len);
+        strcpy(curr,line);
+        Queue_Enqueue(&lineQueue,&curr);
         lineCounter++;
     }
-    fclose(fp);
+    //fclose(fp);
 
     // Creating multidimensional array to store lines (while stripping newline characters).
-    char lines[lineCounter][100];
+   /* char lines[lineCounter][100];
     // Reading lines from file into 'lines' array.
     int counter = 0;
     char *pos;
@@ -52,10 +62,14 @@ int main(int argc, char const *argv[]){
     // Enqueueing items.
     //queue_t *q;
     //Queue_Init(&q);
+    */
     for(int i = 0; i < lineCounter; i++){
-        printf("%d:\t%s\n", i + 1, lines[i]);
+        char* value=NULL;
+        Queue_Dequeue(&lineQueue,&value);
+        printf("%d:\t%s\n", i + 1, value);
         //Queue_Enqueue(&q, lines[i]);
     }
     
+   
     return 0;
 }
