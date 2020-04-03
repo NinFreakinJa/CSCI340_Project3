@@ -33,6 +33,7 @@ int main(int argc, char const *argv[]){
     }
     int consumerTaskCount = atoi(argv[1]);
     
+
     Queue_Init(&lineQueue);
     pthread_mutex_init(&linecountlock, NULL);
     pthread_mutex_init(&wordcountlock, NULL);
@@ -46,12 +47,14 @@ int main(int argc, char const *argv[]){
     done=0;
     //fp = fopen("./temp.txt", "w");
     //while(fgets(buffer, 100, stdin)){
-    
-
+    int arr[consumerTaskCount];
+    for(int i=0;i<consumerTaskCount;i++){
+        arr[i]=i+1;
+    }
     pthread_t p[consumerTaskCount];
     for(int i=0;i<consumerTaskCount;i++){
-        int pNum=i+1;
-        pthread_create(&p[i],NULL,consumer,&pNum);
+        //int pNum=i+1;
+        pthread_create(&p[i],NULL,consumer,&arr[i]);
     }
     int complete=0;
     while((read=getline(&line,&len,stdin))!=-1 || complete==0){
@@ -59,7 +62,7 @@ int main(int argc, char const *argv[]){
         if(read==-1){
             complete=1;
         }
-        char *pos;
+        //char *pos;
         char* curr=malloc(len);
         int size=len;
         // Stripping newline character.
@@ -99,6 +102,7 @@ int checkIfDone(){
         pthread_cond_wait(&c,&linecountlock);
         pthread_mutex_unlock(&linecountlock);
         checkIfDone();
+        return -1;
     }
     else if(lineCounter>0 && done==1){
         lineCounter--;
@@ -130,7 +134,7 @@ void *consumer(void* thnum){
 
 int wordCounter(char* str,int size){
     int wordCount = 0;
-    int counter = 0;
+    //int counter = 0;
     for(int i = 0; i < size; i++){
         if(str[i] == ' '){
             wordCount++;
