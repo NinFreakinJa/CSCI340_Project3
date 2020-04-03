@@ -71,6 +71,11 @@ void *consumer(void* thnum){
 }
 
 
+int checkIfDone();
+void *consumer(void* thnum);
+int isAlpha(char c);
+int wordCounter(char* str,int size);
+
 int main(int argc, char const *argv[]){
     // Checking command-line arguments.
     if(argc != 2 || atoi(argv[1]) <= 0){
@@ -78,8 +83,6 @@ int main(int argc, char const *argv[]){
         return 1;
     }
     int consumerTaskCount = atoi(argv[1]);
-
-    // Reading from stdin into file for easier handling.
     
     Queue_Init(&lineQueue);
     pthread_mutex_init(&linecountlock, NULL);
@@ -90,7 +93,6 @@ int main(int argc, char const *argv[]){
     char *line=NULL;
     size_t len=0;
     ssize_t read;
-    //char buffer[100];
     lineCounter = 0;
     totalWC=0;
     done=0;
@@ -109,8 +111,13 @@ int main(int argc, char const *argv[]){
         if(read==-1){
             complete=1;
         }
+        char *pos;
         char* curr=malloc(len);
         int size=len;
+        // Stripping newline character.
+        if((pos=strchr(line, '\n')) != NULL){
+            *pos = '\0';
+        }
         strcpy(curr,line);
         Queue_Enqueue(&lineQueue,&curr,&size);
         pthread_mutex_lock(&linecountlock);
@@ -127,38 +134,49 @@ int main(int argc, char const *argv[]){
     }
 
     printf("Total Word Count: %d\n", totalWC);
-
-    //fclose(fp);
-
-    // Creating multidimensional array to store lines (while stripping newline characters).
-   /* char lines[lineCounter][100];
-    // Reading lines from file into 'lines' array.
-    int counter = 0;
-    char *pos;
-    fp = fopen("./temp.txt", "r");
-    while(fgets(buffer, 100, fp)){
-        // Stripping newline character.
-        if ((pos = strchr(buffer, '\n')) != NULL){
-            *pos = '\0';
-        }
-        // Copying formatted string to array.
-        strcpy(lines[counter], buffer);
-        counter++;
-    }
-    fclose(fp);
-    remove("./temp.txt");
-
-    // Enqueueing items.
-    //queue_t *q;
-    //Queue_Init(&q);
-    */
-    /*for(int i = 0; i < lineCounter; i++){
-        char* value=NULL;
-        Queue_Dequeue(&lineQueue,&value);
-        printf("%d:\t%s\n", i + 1, value);
-        //Queue_Enqueue(&q, lines[i]);
-    }*/
-    
    
     return 0;
+}
+
+int checkIfDone(){
+    pthread_mutex_lock(&linecountlock);
+    if(lineCounter>0){
+        lineCounter--;
+        pthread_mutex_unlock(&linecountlock);
+        return 1;
+    }
+    else{
+        pthread_mutex_unlock(&linecountlock);
+        return 0;
+    }
+}
+
+void *consumer(void* thnum){
+    int thId=*((int*)thnum);
+    while(checkIfDone()==1){
+        char* value=NULL;
+        int size=0;
+        Queue_Dequeue(&lineQueue,&value,&size);
+        int count=wordCounter(value,size);
+        pthread_mutex_lock(&wordcountlock);
+        totalWC+=count;
+        pthread_mutex_unlock(&wordcountlock);
+        printf("Thread %d:  %s  : Word Count=%d\n",thId,value,count);
+    }
+    return NULL;
+}
+
+int wordCounter(char* str,int size){
+    int wordCount = 0;
+    int counter = 0;
+    for(int i = 0; i < size; i++){
+        if(str[i] == ' '){
+            wordCount++;
+        }
+    }
+
+    if(wordCount > 0){
+        return ++wordCount;
+    }
+    return wordCount;
 }
