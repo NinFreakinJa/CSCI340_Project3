@@ -71,10 +71,7 @@ void *consumer(void* thnum){
 }
 
 
-int checkIfDone();
-void *consumer(void* thnum);
 int isAlpha(char c);
-int wordCounter(char* str,int size);
 
 int main(int argc, char const *argv[]){
     // Checking command-line arguments.
