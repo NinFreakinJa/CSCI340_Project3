@@ -134,7 +134,6 @@ void *consumer(void* thnum){
 int wordCounter(char* str,int size){
     int spacePrev = 0;
     int wordCount = 0;
-    int counter = 0;
     for(int i = 0; i < size; i++){
         if(str[i] == ' '){
             if(!spacePrev){
