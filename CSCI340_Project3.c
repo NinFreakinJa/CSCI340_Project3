@@ -34,7 +34,7 @@ int checkIfDone(){
 
 void *consumer(void* thnum){
     int thId=*((int*)thnum);
-    while(checkIfDone()==0){
+    while(checkIfDone()==1){
         char* value=NULL;
         int size=0;
         Queue_Dequeue(&lineQueue,&value,&size);
