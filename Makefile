@@ -1,10 +1,15 @@
-PGMS=CSCI340_Project3 queue
+TARGET=CSCI340_Project3
+OBJECTS=CSCI340_Project3.c
 
 CC=gcc
-CFLAGS=-Wall -g -o -pthread
+CFLAGS=-Wall -g -o
+LDFLAGS=-pthread
 
-all: $(PGMS)
+all: $(TARGET)
+
+$(TARGET): $(OBJECTS)
+	$(CC) $(OBJECTS) -o $@ $(LDFLAGS)
 
 clean:
-	rm -f $(PGMS)
+	rm -f $(TARGET)
 	rm -f *.o
