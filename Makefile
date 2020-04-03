@@ -13,3 +13,6 @@ $(TARGET): $(OBJECTS)
 clean:
 	rm -f $(TARGET)
 	rm -f *.o
+
+depends:
+	$(CC) -MM $(OBJECTS:.o=.c) > depends
