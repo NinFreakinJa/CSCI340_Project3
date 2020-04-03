@@ -93,18 +93,6 @@ void *consumer(void* thnum){
     return NULL;
 }
 
-/*
-int isAlpha(char c){
-    char letters[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    for(int i = 0; i < 52; i++){
-        if(c == letters[i]){
-            return 1;
-        }
-    }
-    return 0;
-}
-*/
-
 int wordCounter(char* str,int size){
     int wordCount = 0;
     int counter = 0;
