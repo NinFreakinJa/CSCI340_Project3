@@ -139,9 +139,11 @@ void *consumer(void* thnum){
 }
 
 int wordCounter(char* str,int size){
+    // Initializing tracker variables.
     int spacePrev = 0;
     int wordCount = 0;
     for(int i = 0; i < size; i++){
+        // Handles consequtive spaces to not add extra words.
         if(str[i] == ' '){
             if(!spacePrev){
                 wordCount++;
@@ -151,7 +153,7 @@ int wordCounter(char* str,int size){
             spacePrev = 0;
         }
     }
-
+    // Checking if line had any words.
     if(wordCount > 0){
         return ++wordCount;
     }
