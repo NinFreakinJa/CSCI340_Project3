@@ -40,12 +40,13 @@ void Queue_Init(queue_t *q) {
 }
 
 void Queue_Enqueue(queue_t * q,
-                   char**       value) {
+                   char**       value, int* size) {
     
     node_t *tmp = malloc(sizeof(node_t));
     assert(tmp != NULL);
     tmp->value = *value;
     tmp->next  = NULL;
+    tmp->size=*size;
 
     pthread_mutex_lock(&q->tail_lock);
     q->tail->next = tmp;
@@ -54,7 +55,7 @@ void Queue_Enqueue(queue_t * q,
 }
 
 int Queue_Dequeue(queue_t * q,
-                  char **     value) {
+                  char **     value,int* size) {
 
     // Failure is always an option
     int rc = -1;
@@ -65,6 +66,7 @@ int Queue_Dequeue(queue_t * q,
     node_t *new_head = tmp->next;
     if (new_head != NULL) {
         *value = tmp->value;
+        *size=tmp->size;
         q->head = new_head;
         free(tmp);
         rc = 0;

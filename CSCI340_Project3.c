@@ -15,7 +15,7 @@ queue_t lineQueue;
 int lineCounter;
 pthread_mutex_t countlock;
 
-int wordCounter(char* str){
+int wordCounter(char* str,int size){
 
 }
 
@@ -23,11 +23,12 @@ void *consumer(void* thnum){
     int thId=*((int*)thnum);
     while(lineCounter>0){
         char* value=NULL;
-        Queue_Dequeue(&lineQueue,&value);
+        int size=0;
+        Queue_Dequeue(&lineQueue,&value,&size);
         pthread_mutex_lock(&countlock);
         lineCounter--;
         pthread_mutex_unlock(&countlock);
-        int count=wordCounter(value);
+        int count=wordCounter(value,size);
         printf("Thread %d:  %s  : Word Count=%d",thId,value,count);
     }
     return NULL;
@@ -57,8 +58,9 @@ int main(int argc, char const *argv[]){
     while((read=getline(&line,&len,stdin))!=-1){
         //fprintf(fp, "%s", buffer);
         char* curr=malloc(len);
+        int size=len;
         strcpy(curr,line);
-        Queue_Enqueue(&lineQueue,&curr);
+        Queue_Enqueue(&lineQueue,&curr,&size);
         lineCounter++;
     }
 
