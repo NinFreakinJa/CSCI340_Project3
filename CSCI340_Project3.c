@@ -33,7 +33,7 @@ int main(int argc, char const *argv[]){
     }
     int consumerTaskCount = atoi(argv[1]);
     
-
+    //Initialize all global variables
     Queue_Init(&lineQueue);
     pthread_mutex_init(&linecountlock, NULL);
     pthread_mutex_init(&wordcountlock, NULL);
@@ -44,6 +44,8 @@ int main(int argc, char const *argv[]){
     lineCounter = 0;
     totalWC=0;
     done=0;
+
+    //Create specified number of threads
     int arr[consumerTaskCount];
     for(int i=0;i<consumerTaskCount;i++){
         arr[i]=i+1;
@@ -52,6 +54,8 @@ int main(int argc, char const *argv[]){
     for(int i=0;i<consumerTaskCount;i++){
         pthread_create(&p[i],NULL,consumer,&arr[i]);
     }
+
+    //Reads the file line by line into the queue simultaneous with the consumers
     int complete=0;
     while((read=getline(&line,&len,stdin))!=-1 || complete==0){
         if(read==-1){
@@ -64,11 +68,14 @@ int main(int argc, char const *argv[]){
         pthread_mutex_lock(&linecountlock);
         lineCounter++;
         pthread_mutex_unlock(&linecountlock);
+        //signals waiting consumer
         pthread_cond_signal(&c);
     }
+    //tells consumer that the producer is done with its task
     pthread_mutex_lock(&donelock);
     done=1;
     pthread_mutex_unlock(&donelock);
+    //rejoin threads
     for(int i=0;i<consumerTaskCount;i++){
         pthread_join(p[i],NULL);
     }
@@ -78,27 +85,32 @@ int main(int argc, char const *argv[]){
     return 0;
 }
 
+//checks if the consumer thread should continue, wait, or terminate
 int checkIfDone(){
     pthread_mutex_lock(&linecountlock);
     pthread_mutex_lock(&donelock);
+    //there are still lines in the queue, continue
     if(lineCounter>0&&done==0){
         lineCounter--;
         pthread_mutex_unlock(&donelock);
         pthread_mutex_unlock(&linecountlock);
         return 1;
     }
+    //there is nothing in the queue but the producer is not done, wait for signal and retest
     else if(lineCounter<=0 && done==0){
         pthread_mutex_unlock(&donelock);
         pthread_cond_wait(&c,&linecountlock);
         pthread_mutex_unlock(&linecountlock);
         return checkIfDone();
     }
+    //the producer is done but the queue still has items, continue
     else if(lineCounter>0 && done==1){
         lineCounter--;
         pthread_mutex_unlock(&donelock);
         pthread_mutex_unlock(&linecountlock);
         return 1;
     }
+    //there is nothing in the queue and the producer is done, terminate
     else{
         pthread_mutex_unlock(&donelock);
         pthread_mutex_unlock(&linecountlock);
@@ -106,8 +118,11 @@ int checkIfDone(){
     }
 }
 
+//Determines what the threads do
 void *consumer(void* thnum){
     int thId=*((int*)thnum);
+    //will loop until queue is empty and producer signals completion
+    //dequeues line, counts the words, and outputs information
     while(checkIfDone()==1){
         char* value=NULL;
         int size=0;
