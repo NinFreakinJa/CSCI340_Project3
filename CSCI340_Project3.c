@@ -50,6 +50,17 @@ int main(int argc, char const *argv[]){
         Queue_Enqueue(&lineQueue,&curr);
         lineCounter++;
     }
+
+    pthread_t p[consumerTaskCount];
+    for(int i=0;i<consumerTaskCount;i++){
+        pthread_create(&p[i],NULL,consumer,&(i+1));
+    }
+    for(int i=0;i<consumerTaskCount;i++){
+        pthread_join(p[i],NULL);
+    }
+
+
+
     //fclose(fp);
 
     // Creating multidimensional array to store lines (while stripping newline characters).
