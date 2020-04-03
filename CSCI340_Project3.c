@@ -20,9 +20,21 @@ int wordCounter(char* str,int size){
     return -1;
 }
 
+int checkIfDone(){
+    pthread_mutex_lock(&countlock);
+    if(lineCounter>0){
+        pthread_mutex_unlock(&countlock);
+        return 1;
+    }
+    else{
+        pthread_mutex_unlock(&countlock);
+        return 0;
+    }
+}
+
 void *consumer(void* thnum){
     int thId=*((int*)thnum);
-    while(lineCounter>0){
+    while(checkIfDone()==0){
         char* value=NULL;
         int size=0;
         Queue_Dequeue(&lineQueue,&value,&size);
