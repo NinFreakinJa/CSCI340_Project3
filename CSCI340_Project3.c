@@ -7,11 +7,20 @@
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+#include <string.h>cat
 
 #include "queue.c"
 
+queue_t lineQueue;
+int lineCounter;
 
+void *consumer(void* thnum){
+
+}
+
+int wordCounter(char* str){
+    
+}
 
 int main(int argc, char const *argv[]){
     // Checking command-line arguments.
@@ -22,14 +31,14 @@ int main(int argc, char const *argv[]){
     int consumerTaskCount = atoi(argv[1]);
 
     // Reading from stdin into file for easier handling.
-    queue_t lineQueue;
+    
     Queue_Init(&lineQueue);
     //FILE *fp;
     char *line=NULL;
     size_t len=0;
     ssize_t read;
     //char buffer[100];
-    int lineCounter = 0;
+    lineCounter = 0;
     //fp = fopen("./temp.txt", "w");
     //while(fgets(buffer, 100, stdin)){
     while((read=getline(&line,&len,stdin))!=-1){
