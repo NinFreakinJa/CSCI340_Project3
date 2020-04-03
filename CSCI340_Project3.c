@@ -58,23 +58,16 @@ int main(int argc, char const *argv[]){
         return 1;
     }
     int consumerTaskCount = atoi(argv[1]);
-
-    // Reading from stdin into file for easier handling.
     
     Queue_Init(&lineQueue);
     pthread_mutex_init(&linecountlock, NULL);
     pthread_mutex_init(&wordcountlock, NULL);
-    //FILE *fp;
     char *line=NULL;
     size_t len=0;
     ssize_t read;
-    //char buffer[100];
     lineCounter = 0;
     totalWC=0;
-    //fp = fopen("./temp.txt", "w");
-    //while(fgets(buffer, 100, stdin)){
     while((read=getline(&line,&len,stdin))!=-1){
-        //fprintf(fp, "%s", buffer);
         char* curr=malloc(len);
         int size=len;
         strcpy(curr,line);
@@ -92,38 +85,6 @@ int main(int argc, char const *argv[]){
     }
 
     printf("Total Word Count: %d\n", totalWC);
-
-    //fclose(fp);
-
-    // Creating multidimensional array to store lines (while stripping newline characters).
-   /* char lines[lineCounter][100];
-    // Reading lines from file into 'lines' array.
-    int counter = 0;
-    char *pos;
-    fp = fopen("./temp.txt", "r");
-    while(fgets(buffer, 100, fp)){
-        // Stripping newline character.
-        if ((pos = strchr(buffer, '\n')) != NULL){
-            *pos = '\0';
-        }
-        // Copying formatted string to array.
-        strcpy(lines[counter], buffer);
-        counter++;
-    }
-    fclose(fp);
-    remove("./temp.txt");
-
-    // Enqueueing items.
-    //queue_t *q;
-    //Queue_Init(&q);
-    */
-    /*for(int i = 0; i < lineCounter; i++){
-        char* value=NULL;
-        Queue_Dequeue(&lineQueue,&value);
-        printf("%d:\t%s\n", i + 1, value);
-        //Queue_Enqueue(&q, lines[i]);
-    }*/
-    
    
     return 0;
 }
