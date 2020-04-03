@@ -13,13 +13,14 @@
 
 queue_t lineQueue;
 int lineCounter;
+pthread_mutex_t countlock;
 
 void *consumer(void* thnum){
 
 }
 
 int wordCounter(char* str){
-    
+
 }
 
 int main(int argc, char const *argv[]){
@@ -33,6 +34,7 @@ int main(int argc, char const *argv[]){
     // Reading from stdin into file for easier handling.
     
     Queue_Init(&lineQueue);
+    pthread_mutex_init(countlock, NULL);
     //FILE *fp;
     char *line=NULL;
     size_t len=0;
