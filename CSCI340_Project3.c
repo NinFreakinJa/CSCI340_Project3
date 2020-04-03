@@ -18,6 +18,7 @@ int totalWC;
 pthread_mutex_t linecountlock;
 pthread_mutex_t wordcountlock;
 pthread_mutex_t donelock;
+pthread_cond_t c= PTHREAD_COND_INITIALIZER;
 sem_t s;
 int done;
 
@@ -37,8 +38,8 @@ int checkIfDone(){
     }
     else if(lineCounter<=0 && done==0){
         pthread_mutex_unlock(&donelock);
+        pthread_cond_wait(&c,&linecountlock);
         pthread_mutex_unlock(&linecountlock);
-        sem_wait(&s);
         checkIfDone();
     }
     else if(lineCounter>0 && done==1){
@@ -108,8 +109,10 @@ int main(int argc, char const *argv[]){
         int size=len;
         strcpy(curr,line);
         Queue_Enqueue(&lineQueue,&curr,&size);
+        pthread_mutex_lock(&linecountlock);
         lineCounter++;
-        sem_post(&s);
+        pthread_mutex_unlock(&linecountlock);
+        pthread_cond_signal(&c);
     }
     pthread_mutex_lock(&donelock);
     done=1;
