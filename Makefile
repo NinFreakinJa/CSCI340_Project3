@@ -1,4 +1,4 @@
-TARGET=CSCI340_Project3
+TARGET=CSCI340_Project3.out
 OBJECTS=CSCI340_Project3.c
 
 CC=gcc
