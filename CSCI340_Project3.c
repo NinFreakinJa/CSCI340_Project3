@@ -14,21 +14,23 @@
 queue_t lineQueue;
 int lineCounter;
 int totalWC;
-pthread_mutex_t countlock;
+pthread_mutex_t linecountlock;
+pthread_mutex_t wordcountlock;
+
 
 int wordCounter(char* str,int size){
     return -1;
 }
 
 int checkIfDone(){
-    pthread_mutex_lock(&countlock);
+    pthread_mutex_lock(&linecountlock);
     if(lineCounter>0){
         lineCounter--;
-        pthread_mutex_unlock(&countlock);
+        pthread_mutex_unlock(&linecountlock);
         return 1;
     }
     else{
-        pthread_mutex_unlock(&countlock);
+        pthread_mutex_unlock(&linecountlock);
         return 0;
     }
 }
@@ -40,9 +42,9 @@ void *consumer(void* thnum){
         int size=0;
         Queue_Dequeue(&lineQueue,&value,&size);
         int count=wordCounter(value,size);
-        pthread_mutex_lock(&countlock);
+        pthread_mutex_lock(&wordcountlock);
         totalWC+=count;
-        pthread_mutex_unlock(&countlock);
+        pthread_mutex_unlock(&wordcountlock);
         printf("Thread %d:  %s  : Word Count=%d\n",thId,value,count);
     }
     return NULL;
@@ -60,7 +62,8 @@ int main(int argc, char const *argv[]){
     // Reading from stdin into file for easier handling.
     
     Queue_Init(&lineQueue);
-    pthread_mutex_init(&countlock, NULL);
+    pthread_mutex_init(&linecountlock, NULL);
+    pthread_mutex_init(&wordcountlock, NULL);
     //FILE *fp;
     char *line=NULL;
     size_t len=0;
