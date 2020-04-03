@@ -48,6 +48,7 @@ int main(int argc, char const *argv[]){
     for(int i=0;i<consumerTaskCount;i++){
         arr[i]=i+1;
     }
+    printf("  Thread  |  Word Count  |  Line\n---------------------------------->\n");
     pthread_t p[consumerTaskCount];
     for(int i=0;i<consumerTaskCount;i++){
         pthread_create(&p[i],NULL,consumer,&arr[i]);
@@ -60,6 +61,7 @@ int main(int argc, char const *argv[]){
         char* curr=malloc(len);
         int size=len;
         strcpy(curr,line);
+        curr[strcspn(curr, "\n")] = 0;
         Queue_Enqueue(&lineQueue,&curr,&size);
         pthread_mutex_lock(&linecountlock);
         lineCounter++;
@@ -116,7 +118,7 @@ void *consumer(void* thnum){
         pthread_mutex_lock(&wordcountlock);
         totalWC+=count;
         pthread_mutex_unlock(&wordcountlock);
-        printf("Thread %d:  %s  : Word Count=%d\n",thId,value,count);
+        printf("    %.2d    |     %.4d     |  %s\n",thId,count,value);
     }
     return NULL;
 }
