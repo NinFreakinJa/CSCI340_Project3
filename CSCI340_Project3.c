@@ -23,6 +23,7 @@ int wordCounter(char* str,int size){
 int checkIfDone(){
     pthread_mutex_lock(&countlock);
     if(lineCounter>0){
+        lineCounter--;
         pthread_mutex_unlock(&countlock);
         return 1;
     }
@@ -40,7 +41,6 @@ void *consumer(void* thnum){
         Queue_Dequeue(&lineQueue,&value,&size);
         int count=wordCounter(value,size);
         pthread_mutex_lock(&countlock);
-        lineCounter--;
         totalWC+=count;
         pthread_mutex_unlock(&countlock);
         printf("Thread %d:  %s  : Word Count=%d\n",thId,value,count);
