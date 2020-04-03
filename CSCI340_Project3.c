@@ -13,6 +13,7 @@
 
 queue_t lineQueue;
 int lineCounter;
+int totalWC;
 pthread_mutex_t countlock;
 
 int wordCounter(char* str,int size){
@@ -25,10 +26,11 @@ void *consumer(void* thnum){
         char* value=NULL;
         int size=0;
         Queue_Dequeue(&lineQueue,&value,&size);
+        int count=wordCounter(value,size);
         pthread_mutex_lock(&countlock);
         lineCounter--;
+        totalWC+=count;
         pthread_mutex_unlock(&countlock);
-        int count=wordCounter(value,size);
         printf("Thread %d:  %s  : Word Count=%d\n",thId,value,count);
     }
     return NULL;
@@ -53,6 +55,7 @@ int main(int argc, char const *argv[]){
     ssize_t read;
     //char buffer[100];
     lineCounter = 0;
+    totalWC=0;
     //fp = fopen("./temp.txt", "w");
     //while(fgets(buffer, 100, stdin)){
     while((read=getline(&line,&len,stdin))!=-1){
