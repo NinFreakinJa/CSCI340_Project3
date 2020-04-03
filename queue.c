@@ -1,10 +1,5 @@
-// This shows how the head and tail of the list could
-// be separately be locked allowing pushing and poping
-// to occue in parallel.
-
-// Note: All pthread functions should have their return codes
-//       checked. The checking has been omitted to clarity in
-//       this example.
+//This queue is retrofitted from the one from our notes to fit our purposes
+//char * are now used for values
 
 
 #include <assert.h>
@@ -16,6 +11,7 @@ typedef struct __node_t {
     
     char * value;
     struct __node_t * next;
+    //length of string
     int size;
     
 } node_t;
@@ -39,6 +35,7 @@ void Queue_Init(queue_t *q) {
     pthread_mutex_init(&q->tail_lock, NULL);
 }
 
+//adds new node to tail
 void Queue_Enqueue(queue_t * q,
                    char**       value, int* size) {
     
@@ -54,6 +51,7 @@ void Queue_Enqueue(queue_t * q,
     pthread_mutex_unlock(&q->tail_lock);
 }
 
+//removes node from head, setting the values of value and size for use elsewhere
 int Queue_Dequeue(queue_t * q,
                   char **     value,int* size) {
 
