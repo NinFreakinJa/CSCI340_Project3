@@ -88,7 +88,7 @@ int main(int argc, char const *argv[]){
         pthread_join(p[i],NULL);
     }
 
-
+    printf("Total Word Count: %d\n", totalWC);
 
     //fclose(fp);
 
