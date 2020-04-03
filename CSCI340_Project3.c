@@ -38,37 +38,27 @@ int main(int argc, char const *argv[]){
     pthread_mutex_init(&linecountlock, NULL);
     pthread_mutex_init(&wordcountlock, NULL);
     pthread_mutex_init(&donelock, NULL);;
-    //FILE *fp;
     char *line=NULL;
     size_t len=0;
     ssize_t read;
     lineCounter = 0;
     totalWC=0;
     done=0;
-    //fp = fopen("./temp.txt", "w");
-    //while(fgets(buffer, 100, stdin)){
     int arr[consumerTaskCount];
     for(int i=0;i<consumerTaskCount;i++){
         arr[i]=i+1;
     }
     pthread_t p[consumerTaskCount];
     for(int i=0;i<consumerTaskCount;i++){
-        //int pNum=i+1;
         pthread_create(&p[i],NULL,consumer,&arr[i]);
     }
     int complete=0;
     while((read=getline(&line,&len,stdin))!=-1 || complete==0){
-        //fprintf(fp, "%s", buffer);
         if(read==-1){
             complete=1;
         }
-        //char *pos;
         char* curr=malloc(len);
         int size=len;
-        // Stripping newline character.
-        /*if((pos=strchr(line, '\n')) != NULL){
-            *pos = '\0';
-        }*/
         strcpy(curr,line);
         Queue_Enqueue(&lineQueue,&curr,&size);
         pthread_mutex_lock(&linecountlock);
