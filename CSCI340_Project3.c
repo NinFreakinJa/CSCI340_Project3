@@ -103,8 +103,12 @@ int main(int argc, char const *argv[]){
         int pNum=i+1;
         pthread_create(&p[i],NULL,consumer,&pNum);
     }
-    while((read=getline(&line,&len,stdin))!=-1){
+    int complete=0;
+    while((read=getline(&line,&len,stdin))!=-1 || complete==0){
         //fprintf(fp, "%s", buffer);
+        if(read==-1){
+            complete=1;
+        }
         char* curr=malloc(len);
         int size=len;
         strcpy(curr,line);
