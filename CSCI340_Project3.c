@@ -45,7 +45,7 @@ int main(int argc, char const *argv[]){
     // Reading from stdin into file for easier handling.
     
     Queue_Init(&lineQueue);
-    pthread_mutex_init(countlock, NULL);
+    pthread_mutex_init(&countlock, NULL);
     //FILE *fp;
     char *line=NULL;
     size_t len=0;
@@ -64,7 +64,7 @@ int main(int argc, char const *argv[]){
 
     pthread_t p[consumerTaskCount];
     for(int i=0;i<consumerTaskCount;i++){
-        int pNum=i+1
+        int pNum=i+1;
         pthread_create(&p[i],NULL,consumer,&pNum);
     }
     for(int i=0;i<consumerTaskCount;i++){
