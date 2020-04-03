@@ -101,8 +101,7 @@ int checkIfDone(){
         pthread_mutex_unlock(&donelock);
         pthread_cond_wait(&c,&linecountlock);
         pthread_mutex_unlock(&linecountlock);
-        checkIfDone();
-        //return -1;
+        return checkIfDone();
     }
     else if(lineCounter>0 && done==1){
         lineCounter--;
