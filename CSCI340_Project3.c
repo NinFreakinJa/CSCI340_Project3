@@ -17,9 +17,52 @@ int totalWC;
 pthread_mutex_t linecountlock;
 pthread_mutex_t wordcountlock;
 
+int checkIfDone();
+void *consumer(void* thnum);
+int isAlpha(char c);
+int wordCounter(char* str,int size);
 
-int wordCounter(char* str,int size){
-    return -1;
+int main(int argc, char const *argv[]){
+    // Checking command-line arguments.
+    if(argc != 2 || atoi(argv[1]) <= 0){
+        printf("Usage:\t%s <consumer_task_count>\n", argv[0]);
+        return 1;
+    }
+    int consumerTaskCount = atoi(argv[1]);
+    
+    Queue_Init(&lineQueue);
+    pthread_mutex_init(&linecountlock, NULL);
+    pthread_mutex_init(&wordcountlock, NULL);
+    char *line=NULL;
+    size_t len=0;
+    ssize_t read;
+    lineCounter = 0;
+    totalWC=0;
+    char *pos;
+    while((read=getline(&line,&len,stdin))!=-1){
+        char* curr=malloc(len);
+        int size=len;
+        // Stripping newline character.
+        if((pos=strchr(line, '\n')) != NULL){
+            *pos = '\0';
+        }
+        strcpy(curr,line);
+        Queue_Enqueue(&lineQueue,&curr,&size);
+        lineCounter++;
+    }
+
+    pthread_t p[consumerTaskCount];
+    for(int i=0;i<consumerTaskCount;i++){
+        int pNum=i+1;
+        pthread_create(&p[i],NULL,consumer,&pNum);
+    }
+    for(int i=0;i<consumerTaskCount;i++){
+        pthread_join(p[i],NULL);
+    }
+
+    printf("Total Word Count: %d\n", totalWC);
+   
+    return 0;
 }
 
 int checkIfDone(){
@@ -50,41 +93,29 @@ void *consumer(void* thnum){
     return NULL;
 }
 
-
-int main(int argc, char const *argv[]){
-    // Checking command-line arguments.
-    if(argc != 2 || atoi(argv[1]) <= 0){
-        printf("Usage:\t%s <consumer_task_count>\n", argv[0]);
-        return 1;
+/*
+int isAlpha(char c){
+    char letters[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    for(int i = 0; i < 52; i++){
+        if(c == letters[i]){
+            return 1;
+        }
     }
-    int consumerTaskCount = atoi(argv[1]);
-    
-    Queue_Init(&lineQueue);
-    pthread_mutex_init(&linecountlock, NULL);
-    pthread_mutex_init(&wordcountlock, NULL);
-    char *line=NULL;
-    size_t len=0;
-    ssize_t read;
-    lineCounter = 0;
-    totalWC=0;
-    while((read=getline(&line,&len,stdin))!=-1){
-        char* curr=malloc(len);
-        int size=len;
-        strcpy(curr,line);
-        Queue_Enqueue(&lineQueue,&curr,&size);
-        lineCounter++;
-    }
-
-    pthread_t p[consumerTaskCount];
-    for(int i=0;i<consumerTaskCount;i++){
-        int pNum=i+1;
-        pthread_create(&p[i],NULL,consumer,&pNum);
-    }
-    for(int i=0;i<consumerTaskCount;i++){
-        pthread_join(p[i],NULL);
-    }
-
-    printf("Total Word Count: %d\n", totalWC);
-   
     return 0;
+}
+*/
+
+int wordCounter(char* str,int size){
+    int wordCount = 0;
+    int counter = 0;
+    for(int i = 0; i < size; i++){
+        if(str[i] == ' '){
+            wordCount++;
+        }
+    }
+
+    if(wordCount > 0){
+        return ++wordCount;
+    }
+    return wordCount;
 }
