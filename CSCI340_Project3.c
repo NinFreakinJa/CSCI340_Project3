@@ -15,23 +15,24 @@ queue_t lineQueue;
 int lineCounter;
 pthread_mutex_t countlock;
 
+int wordCounter(char* str){
+
+}
+
 void *consumer(void* thnum){
     int thId=*((int*)thnum);
     while(lineCounter>0){
         char* value=NULL;
         Queue_Dequeue(&lineQueue,&value);
-        pthread_mutex_lock(countlock);
+        pthread_mutex_lock(&countlock);
         lineCounter--;
-        pthread_mutex_unlock(countlock);
+        pthread_mutex_unlock(&countlock);
         int count=wordCounter(value);
         printf("Thread %d:  %s  : Word Count=%d",thId,value,count);
     }
     return NULL;
 }
 
-int wordCounter(char* str){
-
-}
 
 int main(int argc, char const *argv[]){
     // Checking command-line arguments.
@@ -55,7 +56,7 @@ int main(int argc, char const *argv[]){
     //while(fgets(buffer, 100, stdin)){
     while((read=getline(&line,&len,stdin))!=-1){
         //fprintf(fp, "%s", buffer);
-        char* curr=malloc(sizeof(char)*len);
+        char* curr=malloc(len);
         strcpy(curr,line);
         Queue_Enqueue(&lineQueue,&curr);
         lineCounter++;
@@ -63,7 +64,8 @@ int main(int argc, char const *argv[]){
 
     pthread_t p[consumerTaskCount];
     for(int i=0;i<consumerTaskCount;i++){
-        pthread_create(&p[i],NULL,consumer,&(i+1));
+        int pNum=i+1
+        pthread_create(&p[i],NULL,consumer,&pNum);
     }
     for(int i=0;i<consumerTaskCount;i++){
         pthread_join(p[i],NULL);
