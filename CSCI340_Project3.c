@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <semaphore.h>
 
 #include "queue.c"
 
@@ -16,6 +17,9 @@ int lineCounter;
 int totalWC;
 pthread_mutex_t linecountlock;
 pthread_mutex_t wordcountlock;
+pthread_mutex_t donelock;
+sem_t s;
+int done;
 
 
 int wordCounter(char* str,int size){
@@ -24,12 +28,27 @@ int wordCounter(char* str,int size){
 
 int checkIfDone(){
     pthread_mutex_lock(&linecountlock);
-    if(lineCounter>0){
+    pthread_mutex_lock(&donelock);
+    if(lineCounter>0&&done==0){
         lineCounter--;
+        pthread_mutex_unlock(&donelock);
+        pthread_mutex_unlock(&linecountlock);
+        return 1;
+    }
+    else if(lineCounter<=0 && done==0){
+        pthread_mutex_unlock(&donelock);
+        pthread_mutex_unlock(&linecountlock);
+        sem_wait(&s);
+        checkIfDone();
+    }
+    else if(lineCounter>0 && done==1){
+        lineCounter--;
+        pthread_mutex_unlock(&donelock);
         pthread_mutex_unlock(&linecountlock);
         return 1;
     }
     else{
+        pthread_mutex_unlock(&donelock);
         pthread_mutex_unlock(&linecountlock);
         return 0;
     }
@@ -64,6 +83,8 @@ int main(int argc, char const *argv[]){
     Queue_Init(&lineQueue);
     pthread_mutex_init(&linecountlock, NULL);
     pthread_mutex_init(&wordcountlock, NULL);
+    pthread_mutex_init(&donelock, NULL);
+    sem_init(&s,0,0);
     //FILE *fp;
     char *line=NULL;
     size_t len=0;
@@ -71,8 +92,16 @@ int main(int argc, char const *argv[]){
     //char buffer[100];
     lineCounter = 0;
     totalWC=0;
+    done=0;
     //fp = fopen("./temp.txt", "w");
     //while(fgets(buffer, 100, stdin)){
+    
+
+    pthread_t p[consumerTaskCount];
+    for(int i=0;i<consumerTaskCount;i++){
+        int pNum=i+1;
+        pthread_create(&p[i],NULL,consumer,&pNum);
+    }
     while((read=getline(&line,&len,stdin))!=-1){
         //fprintf(fp, "%s", buffer);
         char* curr=malloc(len);
@@ -80,13 +109,12 @@ int main(int argc, char const *argv[]){
         strcpy(curr,line);
         Queue_Enqueue(&lineQueue,&curr,&size);
         lineCounter++;
+        sem_post(&s);
     }
-
-    pthread_t p[consumerTaskCount];
-    for(int i=0;i<consumerTaskCount;i++){
-        int pNum=i+1;
-        pthread_create(&p[i],NULL,consumer,&pNum);
-    }
+    pthread_mutex_lock(&donelock);
+    done=1;
+    pthread_mutex_unlock(&donelock);
+    //sem_post(&s);
     for(int i=0;i<consumerTaskCount;i++){
         pthread_join(p[i],NULL);
     }
